@@ -1,8 +1,11 @@
 import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
+import {Button, Fab, TextField, TextFieldVariants} from "@mui/material";
+import AddIcon from '@mui/icons-material/Add';
 
 export type PropsTypeAddItemForm = {
-    addTask: (title: string, todoListId: string) => void
-    id:string
+    addItem: (title: string) => void
+    variant:TextFieldVariants
+
 }
 export const AddItemForm = (props: PropsTypeAddItemForm) => {
     const [error, setError] = useState<string | null>()
@@ -10,7 +13,7 @@ export const AddItemForm = (props: PropsTypeAddItemForm) => {
     const onKeyPressHandler = (event: KeyboardEvent<HTMLInputElement>) => {
         setError(null)
         if (event.charCode === 13) {
-            props.addTask(newTaskTitle, props.id)
+            props.addItem(newTaskTitle)
             setNewTaskTitle('')
         }
     }
@@ -21,18 +24,20 @@ export const AddItemForm = (props: PropsTypeAddItemForm) => {
             setError("Title is required")
             return
         }
-        props.addTask(newTaskTitle, props.id)
+        props.addItem(newTaskTitle)
         setNewTaskTitle('')
     }
 
     return (
         <div>
-            <input value={newTaskTitle}
+            <TextField  color={'primary'} variant={props.variant}  size={"small"} value={newTaskTitle}
                    onChange={newTaskTitleChangeHandler}
                    onKeyPress={onKeyPressHandler}
                    className={error ? 'error' : ""}
             />
-            <button onClick={addTask}>+</button>
+            <Fab onClick={addTask} color="primary" aria-label="add" size={'small'}>
+                <AddIcon />
+            </Fab>
             {error && <div className='error-message'>{error}</div>}
         </div>
     );

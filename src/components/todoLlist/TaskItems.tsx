@@ -1,33 +1,45 @@
 import React, {ChangeEvent} from 'react';
 import {TaskType} from "./TodoList";
-export type PropsTypeTodoListTaskItems ={
+import {EditabeSpan} from "./EditabeSpan";
+import {Button, Checkbox, Icon} from '@mui/material';
+import {green} from '@mui/material/colors';
+import {Delete} from "@mui/icons-material";
+
+export type PropsTypeTodoListTaskItems = {
     tasks: TaskType[]
     removeTasks: (id: string, todoListId: string) => void
-    id:string
+    id: string
     changeTaskStatus: (taskId: string, isDone: boolean, todoListId: string) => void
+    onChangeTaskTitle: (taskId: string, newTitle: string, todoListId: string) => void
 }
-export const TodoListTaskItems = (props:PropsTypeTodoListTaskItems) => {
+export const TaskItems = (props: PropsTypeTodoListTaskItems) => {
     return (
-        <div>{props.tasks.map((t) => {
+        <ul style={{padding:"0"}}>{props.tasks.map((t) => {
             const removeTask = () => props.removeTasks(t.id, props.id)
-            const onChageHandler = (e: ChangeEvent<HTMLInputElement>) => {
+            const onChageTaskStatus = (e: ChangeEvent<HTMLInputElement>) => {
                 props.changeTaskStatus(t.id, e.currentTarget.checked, props.id)
+            }
+            const onChangeTaskTitle = (newTitle: string) => {
+                props.onChangeTaskTitle(t.id, newTitle, props.id)
             }
 
             return (
-                <li key={t.id} className={t.isDone ? 'is-Done' : ''}>
-                    <input type="checkbox"
-                           checked={t.isDone}
-                           onChange={onChageHandler}
+
+                <li style={{listStyle:"none"} } key={t.id} className={t.isDone ? 'is-Done' : ''}>
+                    <Checkbox
+                        checked={t.isDone}
+                        onChange={onChageTaskStatus}
 
                     />
-                    <span>{t.title}</span>
-                    <button onClick={removeTask}>x</button>
+                    <EditabeSpan title={t.title} onChange={onChangeTaskTitle}/>
+                    <Button onClick={removeTask}>
+                        <Delete/>
+                    </Button>
                 </li>
             )
         })
         }
-        </div>
+        </ul>
     );
 };
 

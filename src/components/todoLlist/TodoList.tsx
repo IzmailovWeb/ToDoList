@@ -1,7 +1,9 @@
-import React, {ChangeEvent} from 'react';
-import {filterValueType} from "../App";
-import AddItemForm from "./AddItemForm";
-import {TodoListTaskItems} from "./TodoListTaskItems";
+import React from 'react';
+import {FilterValueType} from "../../App";
+import {AddItemForm} from "./AddItemForm";
+import {TaskItems} from "./TaskItems";
+import {TodoListTitle} from "./TodoListTitle";
+import {FilterForm} from "./FilterForm";
 
 
 export type TaskType = {
@@ -15,44 +17,52 @@ type TodoListPropsType = {
     title: string
     tasks: TaskType[]
     removeTodoList: (todoListId: string) => void
+    changeTodoListTitle: (newTitle: string, todoListId: string) => void
     removeTasks: (id: string, todoListId: string) => void
-    changeFilter: (value: filterValueType, todoListid: string) => void
+    changeFilter: (value: FilterValueType, todoListid: string) => void
     addTask: (title: string, todoListId: string) => void
     changeTaskStatus: (taskId: string, isDone: boolean, todoListId: string) => void
-    filter: filterValueType
+    onChangeTaskTitle: (taskId: string, newTitle: string, todoListId: string) => void
+    calculateCompletionTask:(todolistId:string) => number
+
+    filter: FilterValueType
 }
+
 export const TodoList = (props: TodoListPropsType) => {
+    const addTask = (title: string) => {
+        props.addTask(title, props.id)
+    }
+    const onChange = (newTitle:string)=>{
+        props.changeTodoListTitle(newTitle,props.id)
+    }
 
-    const onAllClickHandler = () => props.changeFilter('all', props.id)
-
-    const onActiveClickHandler = () => props.changeFilter('active', props.id)
-
-    const onCompletedClickHandler = () => props.changeFilter('completed', props.id)
-
-    const removeTodoListHandler = () => props.removeTodoList(props.id)
-
-    const allActiveFilter = props.filter === 'all' ? "active-filter" : ''
-    const ActiveFilter = props.filter === 'active' ? 'active-filter' : ''
-    const completedActiveFilter = props.filter === 'completed' ? "active-filter" : ''
 
 
     return (
+
         <div>
-            <h3>{props.title}
-                <button onClick={removeTodoListHandler}>x</button>
-            </h3>
-            <AddItemForm addTask={props.addTask} id={props.id}/>
-            <TodoListTaskItems
+            <TodoListTitle
+                calculateCompletionTask = {props.calculateCompletionTask}
+                onChange={onChange}
+                title={props.title}
+                id={props.id}
+                removeTodoList={props.removeTodoList}
+            />
+            <AddItemForm
+                variant='standard'
+                addItem={addTask}
+            />
+            <TaskItems
+                onChangeTaskTitle={props.onChangeTaskTitle}
                 tasks={props.tasks}
                 removeTasks={props.removeTasks} id={props.id}
                 changeTaskStatus={props.changeTaskStatus}
             />
-
-            <div>
-                <button className={allActiveFilter} onClick={onAllClickHandler}>all</button>
-                <button className={ActiveFilter} onClick={onActiveClickHandler}>active</button>
-                <button className={completedActiveFilter} onClick={onCompletedClickHandler}>completed</button>
-            </div>
+            <FilterForm
+                id={props.id}
+                filter={props.filter}
+                changeFilter={props.changeFilter}
+            />
         </div>
 
     );
